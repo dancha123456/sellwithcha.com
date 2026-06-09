@@ -1,0 +1,55 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import BottomNavBar from '../components/BottomNavBar.astro';
+---
+<!doctype html>
+<html class="scroll-smooth" lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Cash Homebuyers America - Sell Your House Fast</title>
+        
+        <!-- Google Tag Manager -->
+        <!-- <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','GTM-XXXXXXX');</script> -->
+        <!-- End Google Tag Manager -->
+
+        <!-- UseProof -->
+        <script>
+            // UseProof Script Initialization Placeholder
+            // Replace with actual UseProof snippet provided by the client
+        </script>
+        
+        <!-- Optimizaciones estrictas: Preload de tipografía principal en woff2 con swap para cero CLS -->
+        <link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/inter/v13/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa1ZL7W0Q5nw.woff2" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" />
+        <style>
+            body {
+              min-height: max(884px, 100dvh);
+            }
+        </style>
+	</head>
+	<body class="bg-background text-on-surface font-body-md antialiased min-h-screen flex flex-col pt-16 pb-16 md:pb-0">
+        <!-- Google Tag Manager (noscript) -->
+        <!-- <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+        height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript> -->
+        <!-- End Google Tag Manager (noscript) -->
+        
+        <Header />
+		<main class="flex-grow flex flex-col">
+            <slot />
+        </main>
+        <Footer />
+        <BottomNavBar />
+        
+        <div class="hidden" id="useproof-container"></div>
+	</body>
+</html>

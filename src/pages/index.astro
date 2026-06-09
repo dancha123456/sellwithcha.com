@@ -1,0 +1,18 @@
+---
+import Layout from '../layouts/Layout.astro';
+import TrustBar from '../components/TrustBar.astro';
+import Hero from '../components/Hero.astro';
+import Benefits from '../components/Benefits.astro';
+import CTA from '../components/CTA.astro';
+import Testimonials from '../components/Testimonials.astro';
+---
+
+<Layout>
+    <TrustBar />
+    <div class="flex-grow w-full max-w-container-max mx-auto px-margin-mobile md:px-gutter pb-section-v">
+        <Hero />
+        <Benefits />
+        <CTA />
+        <Testimonials />
+    </div>
+</Layout>
