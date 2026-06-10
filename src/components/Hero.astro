@@ -1,36 +1,109 @@
 ---
+import TrustBar from './TrustBar.astro';
 ---
-<section class="mt-stack-lg flex flex-col md:flex-row gap-stack-lg">
+
+<section
+    class="mt-4 md:mt-stack-lg flex flex-col md:flex-row gap-4 md:gap-stack-lg"
+>
     <!-- Left: Headline & Hook -->
-    <div class="md:w-1/2 flex flex-col justify-center gap-stack-md">
-        <h1 class="font-display text-display text-on-surface">Can't sleep over this house? Inherited it? Need to sell fast?</h1>
-        <p class="font-body-lg text-body-lg text-on-surface-variant">We help homeowners sell as-is and find the best solution for their situation. Talk directly to a decision-maker.</p>
+    <div class="md:w-1/2 flex flex-col justify-center gap-2 md:gap-stack-md">
+        <h1
+            class="text-2xl leading-tight font-extrabold md:font-display md:text-display text-on-surface"
+        >
+            Can't sleep over this house? Inherited it? Need to sell fast?
+        </h1>
+        <TrustBar />
+        <p
+            class="text-sm leading-tight md:font-body-lg md:text-body-lg text-on-surface-variant"
+        >
+            We help homeowners sell as-is and find the best solution for their
+            situation. Talk directly to a decision-maker.
+        </p>
         <!-- Contact Banner (Desktop) -->
-        <a class="hidden md:flex items-center gap-3 bg-inverse-surface text-on-primary p-4 rounded-lg border-b-2 border-primary-fixed mt-4 hover:bg-tertiary transition-colors" href="tel:(480) XXX-XXXX">
-            <svg class="w-6 h-6 text-secondary-fixed" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+        <a
+            class="hidden md:flex items-center gap-3 bg-inverse-surface text-on-primary p-4 rounded-lg border-b-2 border-primary-fixed mt-4 hover:bg-tertiary transition-colors"
+            href="tel:(480) XXX-XXXX"
+        >
+            <svg
+                class="w-6 h-6 text-secondary-fixed"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                ><path
+                    d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
+                ></path></svg
+            >
             <div>
-                <div class="font-label-bold text-label-bold">CALL NOW - Real Home Sale Solutions 24/7</div>
-                <div class="font-headline-md text-headline-md text-secondary-fixed">(480) XXX-XXXX</div>
+                <div class="font-label-bold text-label-bold">
+                    CALL NOW - Real Home Sale Solutions 24/7
+                </div>
+                <div
+                    class="font-headline-md text-headline-md text-secondary-fixed"
+                >
+                    (855) 606-1855
+                </div>
             </div>
         </a>
     </div>
     <!-- Right: Lead Form Card -->
     <div class="md:w-1/2">
-        <div class="bg-surface-container-lowest border border-outline-variant p-6 rounded-lg">
-            <form id="lead-form" class="flex flex-col gap-stack-md" method="POST">
-                <div class="flex flex-col gap-stack-sm">
-                    <label class="font-label-bold text-label-bold text-on-surface" for="address">Property Address</label>
-                    <input class="p-3 border border-outline-variant rounded-DEFAULT focus:border-primary-container focus:ring-1 focus:ring-primary-container font-body-md text-body-md bg-surface-container-lowest text-on-surface" id="address" name="address" placeholder="123 Main St, Phoenix, AZ" required="" type="text"/>
+        <div
+            class="bg-surface-container-lowest border border-outline-variant p-4 md:p-6 rounded-lg"
+        >
+            <form
+                id="lead-form"
+                class="flex flex-col gap-3 md:gap-stack-md"
+                method="POST"
+            >
+                <div class="flex flex-col gap-1 md:gap-stack-sm">
+                    <label
+                        class="text-sm font-bold md:font-label-bold md:text-label-bold text-on-surface"
+                        for="address">Property Address</label
+                    >
+                    <input
+                        class="p-2 md:p-3 border border-outline-variant rounded-DEFAULT focus:border-primary-container focus:ring-1 focus:ring-primary-container text-sm md:font-body-md md:text-body-md bg-surface-container-lowest text-on-surface"
+                        id="address"
+                        name="address"
+                        placeholder="123 Main St, Phoenix, AZ"
+                        required=""
+                        type="text"
+                    />
                 </div>
-                <div class="flex flex-col gap-stack-sm">
-                    <label class="font-label-bold text-label-bold text-on-surface" for="phone">Phone Number</label>
-                    <input class="p-3 border border-outline-variant rounded-DEFAULT focus:border-primary-container focus:ring-1 focus:ring-primary-container font-body-md text-body-md bg-surface-container-lowest text-on-surface" id="phone" name="phone" placeholder="(480) XXX-XXXX" required="" type="tel"/>
+                <div class="flex flex-col gap-1 md:gap-stack-sm">
+                    <label
+                        class="text-sm font-bold md:font-label-bold md:text-label-bold text-on-surface"
+                        for="phone">Phone Number</label
+                    >
+                    <input
+                        class="p-2 md:p-3 border border-outline-variant rounded-DEFAULT focus:border-primary-container focus:ring-1 focus:ring-primary-container text-sm md:font-body-md md:text-body-md bg-surface-container-lowest text-on-surface"
+                        id="phone"
+                        name="phone"
+                        placeholder="(480) XXX-XXXX"
+                        required=""
+                        type="tel"
+                    />
                 </div>
-                <div class="flex items-start gap-3 mt-2">
-                    <input class="mt-1 w-5 h-5 text-secondary border-outline-variant rounded-DEFAULT focus:ring-secondary" id="consent" name="consent" required="" type="checkbox"/>
-                    <label class="font-caption text-caption text-on-surface-variant" for="consent">By checking this box, I agree to receive calls and text messages, including automated and prerecorded messages, from Cash Homebuyers America regarding my property inquiry. Consent is not a condition of purchase. Message and data rates may apply.</label>
+                <div class="flex items-start gap-2 md:gap-3 mt-1 md:mt-2">
+                    <input
+                        class="mt-0.5 md:mt-1 w-4 h-4 md:w-5 md:h-5 text-secondary border-outline-variant rounded-DEFAULT focus:ring-secondary"
+                        id="consent"
+                        name="consent"
+                        required=""
+                        type="checkbox"
+                    />
+                    <label
+                        class="text-xs leading-tight md:font-caption md:text-caption text-on-surface-variant"
+                        for="consent"
+                        >By checking this box, I agree to receive calls and text
+                        messages, including automated and prerecorded messages,
+                        from Cash Homebuyers America regarding my property
+                        inquiry. Consent is not a condition of purchase. Message
+                        and data rates may apply.</label
+                    >
                 </div>
-                <button class="w-full bg-secondary text-on-primary font-label-bold text-label-bold h-14 rounded-DEFAULT border-b-2 border-on-secondary-fixed-variant mt-2 hover:bg-on-secondary-container transition-colors flex justify-center items-center gap-2" type="submit">
+                <button
+                    class="w-full bg-secondary text-on-primary font-bold text-base md:font-label-bold md:text-label-bold h-12 md:h-14 rounded-DEFAULT border-b-2 border-on-secondary-fixed-variant mt-1 md:mt-2 hover:bg-on-secondary-container transition-colors flex justify-center items-center gap-2"
+                    type="submit"
+                >
                     GET MY OFFER
                 </button>
             </form>
@@ -39,28 +112,28 @@
 </section>
 
 <script>
-    const form = document.getElementById('lead-form');
+    const form = document.getElementById("lead-form");
     if (form) {
-        form.addEventListener('submit', function(e) {
+        form.addEventListener("submit", function (e) {
             e.preventDefault();
-            
+
             // Collect data
-            const address = document.getElementById('address').value;
-            const phone = document.getElementById('phone').value;
-            const consent = document.getElementById('consent').checked;
+            const address = document.getElementById("address").value;
+            const phone = document.getElementById("phone").value;
+            const consent = document.getElementById("consent").checked;
             const timestamp = new Date().toISOString();
-            
+
             // Save data
             const leadData = {
                 address,
                 phone,
                 consent,
-                timestamp
+                timestamp,
             };
-            localStorage.setItem('leadData', JSON.stringify(leadData));
-            
+            localStorage.setItem("leadData", JSON.stringify(leadData));
+
             // Redirect
-            window.location.href = '/thank-you';
+            window.location.href = "/thank-you";
         });
     }
 </script>
