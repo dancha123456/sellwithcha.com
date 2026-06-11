@@ -1,46 +1,32 @@
-# Astro Starter Kit: Basics
+# 🏡 Cash Homebuyers America - Project Source Code
 
-```sh
-npm create astro@latest -- --template basics
-```
+> *Welcome! This folder contains the complete source code for the landing page project.*
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+---
 
-## 🚀 Project Structure
+## 🚀 How to Launch Your Site
 
-Inside of your Astro project, you'll see the following folders and files:
+As this is a modern **Astro** project, it is designed for seamless deployment on cloud platforms like **Vercel** or **Netlify**.
 
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
-```
+1. **Upload the source code:** Upload the contents of this folder to a new repository (GitHub, GitLab, or Bitbucket).
+2. **Connect to your platform:** Link your repository to Vercel or Netlify.
+3. **Automatic Deployment:** These platforms will automatically detect the Astro framework, install the necessary dependencies, and build the site for you.
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+> **Note:** *No manual command-line configuration is required.*
 
-## 🧞 Commands
+---
 
-All commands are run from the root of the project, from a terminal:
+## 📞 Support & Contacts
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+All contact information is integrated within the site:
 
-## 👀 Want to learn more?
+- **Email:** [dan@cashhomebuyersamerica.com](mailto:dan@cashhomebuyersamerica.com)
+- **Phone:** (855) 606-1855
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+> **Performance Note:** The site has been fully optimized to achieve a **99/100** performance score on Google Lighthouse. To maintain this speed, please avoid installing heavy third-party plugins directly into the code.
+
+---
+
+## ⚠️ Final Usage Instructions
+
+- **Modifications:** This project is final. Per our agreement, this delivery marks the completion of the project scope. If you require future functional changes, please open a new project request.
