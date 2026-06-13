@@ -1,45 +1,47 @@
 ---
-import TrustBar from './TrustBar.astro';
+import TrustBar from "./TrustBar.astro";
+import Benefits from "./Benefits.astro";
 ---
 
 <section
-    class="mt-4 md:mt-stack-lg flex flex-col md:flex-row gap-4 md:gap-stack-lg"
+    class="mt-[-7px] md:mt-0 flex flex-col md:flex-row gap-[14px] md:gap-[2.7rem]"
 >
     <!-- Left: Headline & Hook -->
-    <div class="md:w-1/2 flex flex-col justify-center gap-2 md:gap-stack-md">
+    <div class="md:w-1/2 flex flex-col justify-start gap-[0.45rem] md:gap-[1.35rem]">
         <h1
-            class="text-2xl leading-tight font-extrabold md:font-display md:text-display text-on-surface"
+            class="text-xl leading-tight font-extrabold md:font-display md:text-display text-on-surface"
         >
-            Can't sleep over this house? Inherited it? Need to sell fast?
+            Can't sleep over this house?
+            <br />
+            Want it over with?
+            <br />
+            Need a real solution?
         </h1>
         <TrustBar />
         <p
             class="text-sm leading-tight md:font-body-lg md:text-body-lg text-on-surface-variant"
         >
-            We help homeowners sell as-is and find the best solution for their
-            situation. Talk directly to a decision-maker.
+            Sell As-Is. Get Real Options. Talk directly to a decision maker
         </p>
         <!-- Contact Banner (Desktop) -->
         <a
-            class="hidden md:flex items-center gap-3 bg-inverse-surface text-on-primary p-4 rounded-lg border-b-2 border-primary-fixed mt-4 hover:bg-tertiary transition-colors"
-            href="tel:855-606-1855"
+            class="hidden md:flex items-center gap-3 bg-white text-gray-900 p-4 rounded-lg border-b-2 border-outline-variant mt-4 hover:bg-gray-50 transition-colors shadow-sm"
+            href="tel:480-470-4065"
         >
             <svg
                 class="w-6 h-6 text-secondary-fixed"
                 viewBox="0 0 24 24"
                 fill="currentColor"
                 ><path
-                    d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
+                    d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.03 21c.76 0 .99-.66.99-1.21v-3.42c0-.55-.45-.99-.99-.99z"
                 ></path></svg
             >
             <div>
                 <div class="font-label-bold text-label-bold">
                     CALL NOW - Real Home Sale Solutions 24/7
                 </div>
-                <div
-                    class="font-headline-md text-headline-md text-secondary-fixed"
-                >
-                    (855) 606-1855
+                <div class="font-headline-md text-headline-md text-primary">
+                    (480) 470-4065
                 </div>
             </div>
         </a>
@@ -47,14 +49,14 @@ import TrustBar from './TrustBar.astro';
     <!-- Right: Lead Form Card -->
     <div class="md:w-1/2">
         <div
-            class="bg-surface-container-lowest border border-outline-variant p-4 md:p-6 rounded-lg"
+            class="bg-surface-container-lowest mt-[-15px] p-[14px] pb-[5px] md:p-[22px] rounded-lg"
         >
             <form
                 id="lead-form"
-                class="flex flex-col gap-3 md:gap-stack-md"
+                class="flex flex-col gap-[0.65rem] md:gap-[1.35rem]"
                 method="POST"
             >
-                <div class="flex flex-col gap-1 md:gap-stack-sm">
+                <div class="flex flex-col gap-[0.2rem] md:gap-[0.45rem]">
                     <label
                         class="text-sm font-bold md:font-label-bold md:text-label-bold text-on-surface"
                         for="address">Property Address</label
@@ -68,7 +70,7 @@ import TrustBar from './TrustBar.astro';
                         type="text"
                     />
                 </div>
-                <div class="flex flex-col gap-1 md:gap-stack-sm">
+                <div class="flex flex-col gap-[0.2rem] md:gap-[0.45rem]">
                     <label
                         class="text-sm font-bold md:font-label-bold md:text-label-bold text-on-surface"
                         for="phone">Phone Number</label
@@ -91,7 +93,7 @@ import TrustBar from './TrustBar.astro';
                         type="checkbox"
                     />
                     <label
-                        class="text-xs leading-tight md:font-caption md:text-caption text-on-surface-variant"
+                        class="text-[9px] leading-tight md:font-caption md:text-[9px] text-on-surface-variant"
                         for="consent"
                         >By checking this box, I agree to receive calls and text
                         messages, including automated and prerecorded messages,
@@ -108,6 +110,7 @@ import TrustBar from './TrustBar.astro';
                 </button>
             </form>
         </div>
+        <Benefits />
     </div>
 </section>
 
@@ -118,9 +121,15 @@ import TrustBar from './TrustBar.astro';
             e.preventDefault();
 
             // Collect data
-            const address = document.getElementById("address").value;
-            const phone = document.getElementById("phone").value;
-            const consent = document.getElementById("consent").checked;
+            const addressInput = document.getElementById("address") as HTMLInputElement;
+            const phoneInput = document.getElementById("phone") as HTMLInputElement;
+            const consentInput = document.getElementById("consent") as HTMLInputElement;
+
+            if (!addressInput || !phoneInput || !consentInput) return;
+
+            const address = addressInput.value;
+            const phone = phoneInput.value;
+            const consent = consentInput.checked;
             const timestamp = new Date().toISOString();
 
             // Save data
