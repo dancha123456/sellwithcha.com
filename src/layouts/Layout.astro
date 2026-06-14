@@ -28,7 +28,8 @@ import BottomNavBar from '../components/BottomNavBar.astro';
         </script>
         
         <!-- Optimizaciones estrictas: Preload de tipografía principal en woff2 con swap para cero CLS -->
-        <link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/inter/v13/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa1ZL7W0Q5nw.woff2" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" />
         <style>
             body {

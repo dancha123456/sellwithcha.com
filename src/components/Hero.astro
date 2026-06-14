@@ -7,9 +7,11 @@ import Benefits from "./Benefits.astro";
     class="mt-[-7px] md:mt-0 flex flex-col md:flex-row gap-[14px] md:gap-[2.7rem]"
 >
     <!-- Left: Headline & Hook -->
-    <div class="md:w-1/2 flex flex-col justify-start gap-[0.45rem] md:gap-[1.35rem]">
+    <div
+        class="md:w-1/2 flex flex-col justify-start gap-[0.45rem] md:gap-[1.35rem]"
+    >
         <h1
-            class="text-xl leading-tight font-extrabold md:font-display md:text-display text-on-surface"
+            class="text-[22px] leading-tight font-extrabold md:font-display md:text-display text-on-surface"
         >
             Can't sleep over this house?
             <br />
@@ -17,12 +19,16 @@ import Benefits from "./Benefits.astro";
             <br />
             Need a real solution?
         </h1>
-        <TrustBar />
-        <p
-            class="text-sm leading-tight md:font-body-lg md:text-body-lg text-on-surface-variant"
+        <div
+            class="flex flex-col items-center gap-2 w-full text-center mt-[-2px] mb-2"
         >
-            Sell As-Is. Get Real Options. Talk directly to a decision maker
-        </p>
+            <TrustBar />
+            <p
+                class="text-[11px] sm:text-[12px] whitespace-nowrap tracking-tight leading-tight md:whitespace-normal md:font-body-lg md:text-body-lg text-on-surface-variant"
+            >
+                Sell As-Is. Get Real Options. Talk directly to a decision maker.
+            </p>
+        </div>
         <!-- Contact Banner (Desktop) -->
         <a
             class="hidden md:flex items-center gap-3 bg-white text-gray-900 p-4 rounded-lg border-b-2 border-outline-variant mt-4 hover:bg-gray-50 transition-colors shadow-sm"
@@ -65,7 +71,8 @@ import Benefits from "./Benefits.astro";
                         class="p-2 md:p-3 border border-outline-variant rounded-DEFAULT focus:border-primary-container focus:ring-1 focus:ring-primary-container text-sm md:font-body-md md:text-body-md bg-surface-container-lowest text-on-surface"
                         id="address"
                         name="address"
-                        placeholder="123 Main St, Phoenix, AZ"
+                        autocomplete="street-address"
+                        placeholder="Enter your Property Address"
                         required=""
                         type="text"
                     />
@@ -79,7 +86,8 @@ import Benefits from "./Benefits.astro";
                         class="p-2 md:p-3 border border-outline-variant rounded-DEFAULT focus:border-primary-container focus:ring-1 focus:ring-primary-container text-sm md:font-body-md md:text-body-md bg-surface-container-lowest text-on-surface"
                         id="phone"
                         name="phone"
-                        placeholder="(480) XXX-XXXX"
+                        autocomplete="tel"
+                        placeholder="(XXX) XXX-XXXX"
                         required=""
                         type="tel"
                     />
@@ -121,9 +129,15 @@ import Benefits from "./Benefits.astro";
             e.preventDefault();
 
             // Collect data
-            const addressInput = document.getElementById("address") as HTMLInputElement;
-            const phoneInput = document.getElementById("phone") as HTMLInputElement;
-            const consentInput = document.getElementById("consent") as HTMLInputElement;
+            const addressInput = document.getElementById(
+                "address",
+            ) as HTMLInputElement;
+            const phoneInput = document.getElementById(
+                "phone",
+            ) as HTMLInputElement;
+            const consentInput = document.getElementById(
+                "consent",
+            ) as HTMLInputElement;
 
             if (!addressInput || !phoneInput || !consentInput) return;
 

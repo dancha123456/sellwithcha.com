@@ -1,13 +1,13 @@
 ---
 const isHome = Astro.url.pathname === '/';
 ---
-<header id="main-header" class="bg-white text-gray-900 border-b border-outline-variant dark:border-outline fixed full-width top-0 w-full z-50 transition-transform duration-300 ease-in-out">
+<header id="main-header" class="bg-white text-gray-900 border-outline-variant dark:border-outline fixed full-width top-0 w-full z-50 transition-transform duration-300 ease-in-out">
     <div class="flex justify-between items-center w-full px-margin-mobile md:px-gutter max-w-container-max mx-auto h-14 md:h-20">
         <div class="flex items-center gap-1 md:gap-2">
-            <div class="bg-white p-1 rounded-sm h-10 md:h-14 w-auto flex-shrink-0 flex items-center justify-center">
+            <div class="bg-white p-1 rounded-sm h-11 md:h-[62px] w-auto flex-shrink-0 flex items-center justify-center">
                 <img src="/logo.webp" alt="Cash Homebuyers America Logo" class="block h-full w-auto object-contain" onerror="this.style.display='none'" />
             </div>
-            <span class="text-lg leading-none font-extrabold md:text-[26px] md:font-headline-md text-gray-900 ml-2 md:ml-4">Cash Homebuyers America</span>
+            <span class="text-[18px] leading-none font-extrabold md:text-[29px] md:font-headline-md text-gray-900 ml-2 md:ml-4">Cash Homebuyers America</span>
         </div>
         <nav class="flex items-center gap-4">
             {!isHome && (
