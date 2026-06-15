@@ -125,7 +125,7 @@ import Benefits from "./Benefits.astro";
 <script>
     const form = document.getElementById("lead-form");
     if (form) {
-        form.addEventListener("submit", function (e) {
+        form.addEventListener("submit", async function (e) {
             e.preventDefault();
 
             // Collect data
@@ -146,14 +146,23 @@ import Benefits from "./Benefits.astro";
             const consent = consentInput.checked;
             const timestamp = new Date().toISOString();
 
-            // Save data
+// Send lead to server (Podio CRM)
             const leadData = {
                 address,
                 phone,
                 consent,
                 timestamp,
+                source: "sellwithcha.com",
             };
-            localStorage.setItem("leadData", JSON.stringify(leadData));
+            try {
+                await fetch("/api/lead", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(leadData),
+                });
+            } catch (err) {
+                console.error("Lead submission failed:", err);
+            }
 
             // Redirect
             window.location.href = "/thank-you";
