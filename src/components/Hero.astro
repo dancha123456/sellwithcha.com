@@ -155,10 +155,9 @@ import Benefits from "./Benefits.astro";
                 source: "sellwithcha.com",
             };
             try {
-                await fetch("/api/lead", {
+                await fetch("https://hooks.zapier.com/hooks/catch/21078382/43asz0s/", {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(leadData),
+                                    body: JSON.stringify(leadData),
                 });
             } catch (err) {
                 console.error("Lead submission failed:", err);
