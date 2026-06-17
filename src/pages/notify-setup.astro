@@ -1,0 +1,123 @@
+---
+// TEMPORARY PAGE — for registering the owner's device with OneSignal.
+// Open this on the device you want to receive lead alerts on, click "Enable
+// Notifications", allow the prompt, then copy the Subscription ID shown below.
+// DELETE this file once the device is registered.
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notification Setup (temporary)</title>
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      window.OneSignalDeferred.push(async function (OneSignal) {
+        const idEl = document.getElementById("sub-id");
+        const stateEl = document.getElementById("state");
+
+        try {
+          await OneSignal.init({
+            appId: "5eb8cefd-48dd-4297-a6dd-d05a04eb37de",
+          });
+        } catch (e) {
+          stateEl.textContent = "❌ init failed: " + (e?.message || e);
+          idEl.textContent = "(init error — see message below / browser console)";
+          console.error("OneSignal init error:", e);
+          return;
+        }
+
+        function refresh() {
+          const id = OneSignal.User?.PushSubscription?.id;
+          const optedIn = OneSignal.User?.PushSubscription?.optedIn;
+          if (id) {
+            idEl.textContent = id;
+            stateEl.textContent = optedIn
+              ? "✅ Subscribed — copy the Subscription ID above."
+              : "⚠️ Registered but not opted in. Click Enable Notifications.";
+          } else {
+            idEl.textContent = "(not subscribed yet)";
+            stateEl.textContent = "Click “Enable Notifications” and allow the prompt.";
+          }
+        }
+
+        // Update whenever the subscription changes
+        OneSignal.User.PushSubscription.addEventListener("change", refresh);
+        refresh();
+
+        document.getElementById("enable").addEventListener("click", async () => {
+          try {
+            await OneSignal.Notifications.requestPermission();
+            await OneSignal.User.PushSubscription.optIn();
+          } catch (e) {
+            stateEl.textContent = "Error: " + (e?.message || e);
+          }
+          refresh();
+        });
+
+        document.getElementById("copy").addEventListener("click", async () => {
+          const id = OneSignal.User?.PushSubscription?.id;
+          if (id) {
+            await navigator.clipboard.writeText(id);
+            stateEl.textContent = "📋 Subscription ID copied to clipboard.";
+          }
+        });
+      });
+    </script>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 640px;
+        margin: 4rem auto;
+        padding: 0 1.5rem;
+        line-height: 1.6;
+        color: #1a1a1a;
+      }
+      h1 { font-size: 1.4rem; }
+      .id-box {
+        background: #f4f4f5;
+        border: 1px solid #e4e4e7;
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        font-family: ui-monospace, monospace;
+        word-break: break-all;
+        margin: 1rem 0;
+      }
+      button {
+        background: #111;
+        color: #fff;
+        border: 0;
+        border-radius: 8px;
+        padding: 0.7rem 1.2rem;
+        font-size: 1rem;
+        cursor: pointer;
+        margin-right: 0.5rem;
+      }
+      button:hover { opacity: 0.9; }
+      .note { color: #71717a; font-size: 0.9rem; }
+      #state { font-weight: 600; margin-top: 1rem; }
+    </style>
+  </head>
+  <body>
+    <h1>🔔 Notification Setup</h1>
+    <p class="note">
+      Temporary page. Open this on the device you want lead alerts on, click
+      <strong>Enable Notifications</strong>, allow the prompt, then copy the
+      Subscription ID. Delete this page afterward.
+    </p>
+
+    <button id="enable">Enable Notifications</button>
+    <button id="copy">Copy ID</button>
+
+    <h2 style="font-size:1rem;margin-top:2rem;">Your Subscription ID</h2>
+    <div class="id-box" id="sub-id">(loading…)</div>
+
+    <p id="state"></p>
+
+    <p class="note">
+      iPhone note: web push only works if you first add this site to your Home
+      Screen (Share → Add to Home Screen) and open it from that icon.
+    </p>
+  </body>
+</html>
