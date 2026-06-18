@@ -4,167 +4,200 @@ import Benefits from "./Benefits.astro";
 ---
 
 <section
-    class="mt-[-7px] md:mt-0 flex flex-col md:flex-row gap-[14px] md:gap-[2.7rem]"
+	class="mt-[-7px] md:mt-0 flex flex-col md:flex-row gap-[14px] md:gap-[2.7rem]"
 >
-    <!-- Left: Headline & Hook -->
-    <div
-        class="md:w-1/2 flex flex-col justify-start gap-[0.45rem] md:gap-[1.35rem]"
-    >
-        <h1
-            class="text-[22px] leading-tight font-extrabold md:font-display md:text-display text-on-surface"
-        >
-            Can't sleep over this house?
-            <br />
-            Want it over with?
-            <br />
-            Need a real solution?
-        </h1>
-        <div
-            class="flex flex-col items-center gap-2 w-full text-center mt-[-2px] mb-2"
-        >
-            <TrustBar />
-            <p
-                class="text-[11px] sm:text-[12px] whitespace-nowrap tracking-tight leading-tight md:whitespace-normal md:font-body-lg md:text-body-lg text-on-surface-variant"
-            >
-                Sell As-Is. Get Real Options. Talk directly to a decision maker.
-            </p>
-        </div>
-        <!-- Contact Banner (Desktop) -->
-        <a
-            class="hidden md:flex items-center gap-3 bg-white text-gray-900 p-4 rounded-lg border-b-2 border-outline-variant mt-4 hover:bg-gray-50 transition-colors shadow-sm"
-            href="tel:480-470-4065"
-        >
-            <svg
-                class="w-6 h-6 text-secondary-fixed"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                ><path
-                    d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.03 21c.76 0 .99-.66.99-1.21v-3.42c0-.55-.45-.99-.99-.99z"
-                ></path></svg
-            >
-            <div>
-                <div class="font-label-bold text-label-bold">
-                    CALL NOW - Real Home Sale Solutions 24/7
-                </div>
-                <div class="font-headline-md text-headline-md text-primary">
-                    (480) 470-4065
-                </div>
-            </div>
-        </a>
-    </div>
-    <!-- Right: Lead Form Card -->
-    <div class="md:w-1/2">
-        <div
-            class="bg-surface-container-lowest mt-[-15px] p-[14px] pb-[5px] md:p-[22px] rounded-lg"
-        >
-            <form
-                id="lead-form"
-                class="flex flex-col gap-[0.65rem] md:gap-[1.35rem]"
-                method="POST"
-            >
-                <div class="flex flex-col gap-[0.2rem] md:gap-[0.45rem]">
-                    <label
-                        class="text-sm font-bold md:font-label-bold md:text-label-bold text-on-surface"
-                        for="address">Property Address</label
-                    >
-                    <input
-                        class="p-2 md:p-3 border border-outline-variant rounded-DEFAULT focus:border-primary-container focus:ring-1 focus:ring-primary-container text-sm md:font-body-md md:text-body-md bg-surface-container-lowest text-on-surface"
-                        id="address"
-                        name="address"
-                        autocomplete="street-address"
-                        placeholder="Enter your Property Address"
-                        required=""
-                        type="text"
-                    />
-                </div>
-                <div class="flex flex-col gap-[0.2rem] md:gap-[0.45rem]">
-                    <label
-                        class="text-sm font-bold md:font-label-bold md:text-label-bold text-on-surface"
-                        for="phone">Phone Number</label
-                    >
-                    <input
-                        class="p-2 md:p-3 border border-outline-variant rounded-DEFAULT focus:border-primary-container focus:ring-1 focus:ring-primary-container text-sm md:font-body-md md:text-body-md bg-surface-container-lowest text-on-surface"
-                        id="phone"
-                        name="phone"
-                        autocomplete="tel"
-                        placeholder="(XXX) XXX-XXXX"
-                        required=""
-                        type="tel"
-                    />
-                </div>
-                <div class="flex items-start gap-2 md:gap-3 mt-1 md:mt-2">
-                    <input
-                        class="mt-0.5 md:mt-1 w-4 h-4 md:w-5 md:h-5 text-secondary border-outline-variant rounded-DEFAULT focus:ring-secondary"
-                        id="consent"
-                        name="consent"
-                        required=""
-                        type="checkbox"
-                    />
-                    <label
-                        class="text-[9px] leading-tight md:font-caption md:text-[9px] text-on-surface-variant"
-                        for="consent"
-                        >By checking this box, I agree to receive calls and text
-                        messages, including automated and prerecorded messages,
-                        from Cash Homebuyers America regarding my property
-                        inquiry. Consent is not a condition of purchase. Message
-                        and data rates may apply.</label
-                    >
-                </div>
-                <button
-                    class="w-full bg-secondary text-on-primary font-bold text-base md:font-label-bold md:text-label-bold h-12 md:h-14 rounded-DEFAULT border-b-2 border-on-secondary-fixed-variant mt-1 md:mt-2 hover:bg-on-secondary-container transition-colors flex justify-center items-center gap-2"
-                    type="submit"
-                >
-                    GET MY OFFER
-                </button>
-            </form>
-        </div>
-        <Benefits />
-    </div>
+	<!-- Left: Headline & Hook -->
+	<div
+		class="md:w-1/2 flex flex-col justify-start gap-[0.45rem] md:gap-[1.35rem]"
+	>
+		<h1
+			class="text-[22px] leading-tight font-extrabold md:font-display md:text-display text-on-surface"
+		>
+			Can't sleep over this house?
+			<br />
+			Want it over with?
+			<br />
+			Need a real solution?
+		</h1>
+		<div
+			class="flex flex-col items-center gap-2 w-full text-center mt-[-2px] mb-2"
+		>
+			<TrustBar />
+			<p
+				class="text-[11px] sm:text-[12px] whitespace-nowrap tracking-tight leading-tight md:whitespace-normal md:font-body-lg md:text-body-lg text-on-surface-variant"
+			>
+				Sell As-Is. Get Real Options. Talk directly to a decision maker.
+			</p>
+		</div>
+		<!-- Contact Banner (Desktop) -->
+		<a
+			class="hidden md:flex items-center gap-3 bg-white text-gray-900 p-4 rounded-lg border-b-2 border-outline-variant mt-4 hover:bg-gray-50 transition-colors shadow-sm"
+			href="tel:480-470-4065"
+		>
+			<svg
+				class="w-6 h-6 text-secondary-fixed"
+				viewBox="0 0 24 24"
+				fill="currentColor"
+			><path
+					d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.03 21c.76 0 .99-.66.99-1.21v-3.42c0-.55-.45-.99-.99-.99z"
+				></path></svg
+			>
+			<div>
+				<div class="font-label-bold text-label-bold">
+					CALL NOW - Real Home Sale Solutions 24/7
+				</div>
+				<div class="font-headline-md text-headline-md text-primary">
+					(480) 470-4065
+				</div>
+			</div>
+		</a>
+	</div>
+	<!-- Right: Lead Form Card -->
+	<div class="md:w-1/2">
+		<div
+			class="bg-surface-container-lowest mt-[-15px] p-[14px] pb-[5px] md:p-[22px] rounded-lg"
+		>
+			<form
+				id="lead-form"
+				class="flex flex-col gap-[0.65rem] md:gap-[1.35rem]"
+				method="POST"
+			>
+				<div class="flex flex-col gap-[0.2rem] md:gap-[0.45rem]">
+					<label
+						class="text-sm font-bold md:font-label-bold md:text-label-bold text-on-surface"
+						for="address">Property Address</label
+					>
+					<input
+						class="p-2 md:p-3 border border-outline-variant rounded-DEFAULT focus:border-primary-container focus:ring-1 focus:ring-primary-container text-sm md:font-body-md md:text-body-md bg-surface-container-lowest text-on-surface"
+						id="address"
+						name="address"
+						autocomplete="street-address"
+						placeholder="Enter your Property Address"
+						required=""
+						type="text"
+					/>
+				</div>
+				<div class="flex flex-col gap-[0.2rem] md:gap-[0.45rem]">
+					<label
+						class="text-sm font-bold md:font-label-bold md:text-label-bold text-on-surface"
+						for="phone">Phone Number</label
+					>
+					<input
+						class="p-2 md:p-3 border border-outline-variant rounded-DEFAULT focus:border-primary-container focus:ring-1 focus:ring-primary-container text-sm md:font-body-md md:text-body-md bg-surface-container-lowest text-on-surface"
+						id="phone"
+						name="phone"
+						autocomplete="tel"
+						placeholder="(XXX) XXX-XXXX"
+						required=""
+						type="tel"
+					/>
+				</div>
+				<div class="flex items-start gap-2 md:gap-3 mt-1 md:mt-2">
+					<input
+						class="mt-0.5 md:mt-1 w-4 h-4 md:w-5 md:h-5 text-secondary border-outline-variant rounded-DEFAULT focus:ring-secondary"
+						id="consent"
+						name="consent"
+						required=""
+						type="checkbox"
+					/>
+					<label
+						class="text-[9px] leading-tight md:font-caption md:text-[9px] text-on-surface-variant"
+						for="consent"
+					>By checking this box, I agree to receive calls and text
+						messages, including automated and prerecorded messages,
+						from Cash Homebuyers America regarding my property
+						inquiry. Consent is not a condition of purchase. Message
+						and data rates may apply.</label
+					>
+				</div>
+				<button
+					class="w-full bg-secondary text-on-primary font-bold text-base md:font-label-bold md:text-label-bold h-12 md:h-14 rounded-DEFAULT border-b-2 border-on-secondary-fixed-variant mt-1 md:mt-2 hover:bg-on-secondary-container transition-colors flex justify-center items-center gap-2"
+					type="submit"
+				>
+					GET MY OFFER
+				</button>
+			</form>
+		</div>
+		<Benefits />
+	</div>
 </section>
 
 <script>
-    const form = document.getElementById("lead-form");
-    if (form) {
-        form.addEventListener("submit", async function (e) {
-            e.preventDefault();
+	const form = document.getElementById("lead-form");
+	if (form) {
+		form.addEventListener("submit", async function (e) {
+			e.preventDefault();
 
-            // Collect data
-            const addressInput = document.getElementById(
-                "address",
-            ) as HTMLInputElement;
-            const phoneInput = document.getElementById(
-                "phone",
-            ) as HTMLInputElement;
-            const consentInput = document.getElementById(
-                "consent",
-            ) as HTMLInputElement;
+			// Collect data
+			const addressInput = document.getElementById(
+				"address",
+			) as HTMLInputElement;
+			const phoneInput = document.getElementById(
+				"phone",
+			) as HTMLInputElement;
+			const consentInput = document.getElementById(
+				"consent",
+			) as HTMLInputElement;
 
-            if (!addressInput || !phoneInput || !consentInput) return;
+			if (!addressInput || !phoneInput || !consentInput) return;
 
-            const address = addressInput.value;
-            const phone = phoneInput.value;
-            const consent = consentInput.checked;
-            const timestamp = new Date().toISOString();
+			const address = addressInput.value;
+			const phone = phoneInput.value;
+			const consent = consentInput.checked;
+			const timestamp = new Date().toISOString();
 
-// Send lead to server (Podio CRM)
-            const leadData = {
-                address,
-                phone,
-                consent,
-                timestamp,
-                source: "sellwithcha.com",
-            };
-            try {
-                await fetch("https://hooks.zapier.com/hooks/catch/21078382/43asz0s/", {
-                    method: "POST",
-                                    body: JSON.stringify(leadData),
-                });
-            } catch (err) {
-                console.error("Lead submission failed:", err);
-            }
+			// --- Validation: only count a conversion for real US leads ---
 
-            // Redirect
-            window.location.href = "/thank-you";
-        });
-    }
+			// Phone: must be a valid 10-digit US number.
+			// Strip everything except digits, allow a leading "1" country code.
+			let digits = phone.replace(/\D/g, "");
+			if (digits.length === 11 && digits.startsWith("1")) {
+				digits = digits.slice(1);
+			}
+			const validPhone =
+				digits.length === 10 && // exactly 10 digits
+				/^[2-9]\d{2}[2-9]\d{6}$/.test(digits); // valid US area code + exchange
+
+			// Address: required, min length, real letters + a street number.
+			const trimmedAddress = address.trim();
+			const validAddress =
+				trimmedAddress.length >= 8 && // minimum length
+				/[a-zA-Z]/.test(trimmedAddress) && // has Latin letters (rejects "ñ")
+				/\d/.test(trimmedAddress); // has a street number
+
+			if (!validPhone) {
+				phoneInput.focus();
+				alert("Please enter a valid 10-digit US phone number.");
+				return;
+			}
+			if (!validAddress) {
+				addressInput.focus();
+				alert(
+					"Please enter your full property address (street number and name).",
+				);
+				return;
+			}
+			// --- End validation ---
+
+			// Send lead to server (Podio CRM)
+			const leadData = {
+				address,
+				phone,
+				consent,
+				timestamp,
+				source: "sellwithcha.com",
+			};
+			try {
+				await fetch("https://hooks.zapier.com/hooks/catch/21078382/43asz0s/", {
+					method: "POST",
+					body: JSON.stringify(leadData),
+				});
+			} catch (err) {
+				console.error("Lead submission failed:", err);
+			}
+
+			// Redirect
+			window.location.href = "/thank-you";
+		});
+	}
 </script>
