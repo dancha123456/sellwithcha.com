@@ -147,7 +147,6 @@ import Benefits from "./Benefits.astro";
 			const timestamp = new Date().toISOString();
 
 			// --- Validation: only count a conversion for real US leads ---
-
 			// Phone: must be a valid 10-digit US number.
 			// Strip everything except digits, allow a leading "1" country code.
 			let digits = phone.replace(/\D/g, "");
@@ -195,7 +194,20 @@ import Benefits from "./Benefits.astro";
 			} catch (err) {
 				console.error("Lead submission failed:", err);
 			}
-
+// Notify admins via Twilio (SMS + call). Fire-and-forget so a
+            // Twilio hiccup never blocks the redirect to the thank-you page.
+            try {
+                fetch("/api/notify", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ address, phone }),
+                    keepalive: true,
+                }).catch((err) =>
+                    console.error("Admin notification failed:", err),
+                );
+            } catch (err) {
+                console.error("Admin notification failed:", err);
+            }
 			// Redirect
 			window.location.href = "/thank-you";
 		});
