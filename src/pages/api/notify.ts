@@ -8,7 +8,7 @@ export const prerender = false;
 //   1. Sends an SMS containing the lead's address + phone.
 //   2. Places a call that says "You've got a new lead".
 
-const CALL_MESSAGE = "Hello, I'm testing leads. You've got a new lead. Kindly check your leads dashboard for details. Thank you.";
+const CALL_MESSAGE = "Hello! You've got a new lead. Kindly check your leads dashboard for details. Thank you.";
 
 type TwilioResult = { to: string; ok: boolean; status: number; error?: string };
 
