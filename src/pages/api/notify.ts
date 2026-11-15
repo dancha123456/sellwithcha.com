@@ -7,6 +7,7 @@ import {
   renderSellerSms,
   toE164US,
 } from "../../lib/leadAlerts";
+import { legacyTwilioNotify } from "../../lib/legacyTwilio";
 
 // On-demand (server-rendered) route. The rest of the site stays static.
 // Called by the lead form after the Zapier/Podio webhook. For every lead it:
@@ -77,9 +78,8 @@ export const POST: APIRoute = async ({ request }) => {
     .map((n) => toE164US(n.trim()))
     .filter((n): n is string => Boolean(n));
 
-  if (!apiKey || !from) {
-    return json(500, { error: "Signal House environment variables are not configured." });
-  }
+  // Signal House not configured yet: keep using the existing Twilio alerts.
+  if (!apiKey || !from) return legacyTwilioNotify(request);
   if (adminNumbers.length === 0) {
     return json(500, { error: "No valid ALERT_NUMBERS configured." });
   }
