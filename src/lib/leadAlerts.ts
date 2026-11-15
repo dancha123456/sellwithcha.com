@@ -4,9 +4,9 @@ export const TIME_ZONE = "America/Phoenix"; // Arizona: no daylight saving
 
 // Seller texts. Keep wording in one place so it matches the registered 10DLC samples.
 export const SELLER_SMS_ACTIVE =
-  "Hey {First_Name}, it's Dan — just got your request for {Street_Address}. Pulling up the property info now and giving you a quick ring in 30 seconds, or is texting easier? Reply STOP to opt out.";
+  "Hi, it's Dan from Cash Homebuyers America. Just got your request for {Street_Address}. Pulling up the property info now and giving you a quick ring in 30 seconds, or is texting easier? Reply STOP to opt out.";
 export const SELLER_SMS_AFTER_HOURS =
-  "Hey {First_Name}, it's Dan — just got your request for {Street_Address}. Pulling up the property info now—is it occupied right now, and does it need any major repairs? Reply STOP to opt out.";
+  "Hi, it's Dan from Cash Homebuyers America. Just got your request for {Street_Address}. Is the property occupied right now, and does it need any major repairs? Reply STOP to opt out.";
 
 export const CALL_MESSAGE =
   "Hello! You've got a new lead. Kindly check your leads dashboard for details. Thank you.";
@@ -31,10 +31,9 @@ export function isCallWindow(now: Date = new Date()): boolean {
   return hour >= 6 && hour < 18;
 }
 
-/** Fill {First_Name} / {Street_Address}. Falls back to "there" when no name was given. */
-export function renderSellerSms(template: string, firstName: string, address: string): string {
-  const name = firstName.trim() || "there";
-  return template.replace("{First_Name}", name).replace("{Street_Address}", address.trim());
+/** Fill {Street_Address} in a seller text template. */
+export function renderSellerSms(template: string, address: string): string {
+  return template.replace("{Street_Address}", address.trim());
 }
 
 /** Strip anything that could break a text/XML body and cap the length. */

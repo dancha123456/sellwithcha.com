@@ -86,18 +86,15 @@ export const POST: APIRoute = async ({ request }) => {
 
   let address = "";
   let phone = "";
-  let firstName = "";
   let consent = false;
   try {
     const body = (await request.json()) as {
       address?: string;
       phone?: string;
-      firstName?: string;
       consent?: boolean;
     };
     address = clean(body.address, 200);
     phone = clean(body.phone, 40);
-    firstName = clean(body.firstName, 40);
     consent = body.consent === true;
   } catch {
     return json(400, { error: "Invalid JSON body." });
@@ -135,7 +132,7 @@ export const POST: APIRoute = async ({ request }) => {
       signalHouse(baseUrl, apiKey, "/message/sms", {
         senderPhoneNumber: from,
         recipientPhoneNumber: [sellerNumber],
-        messageBody: renderSellerSms(template, firstName, address),
+        messageBody: renderSellerSms(template, address),
       }, "seller-sms", sellerNumber),
     );
   }
