@@ -1,4 +1,5 @@
 ---
+import { PHONE } from "../config/site";
 import Layout from "../layouts/Layout.astro";
 ---
 
@@ -19,9 +20,9 @@ import Layout from "../layouts/Layout.astro";
             <p class="mb-4">
                 <strong>Phone:</strong>
                 <a
-                    href="tel:+14804704065"
+                    href={PHONE.tel}
                     class="text-[#1E73BE] hover:underline font-bold text-xl"
-                    >(480) 470-4065</a
+                    >{PHONE.display}</a
                 >
             </p>
             <p class="mb-4 flex flex-col sm:block">

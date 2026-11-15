@@ -1,4 +1,5 @@
 ---
+import { PHONE } from "../config/site";
 
 ---
 
@@ -7,7 +8,7 @@
 >
     <a
         class="bg-green-600 text-white font-bold md:font-headline-md md:text-headline-md py-4 px-8 rounded hover:bg-green-700 transition-colors flex items-center gap-3 w-full md:w-auto justify-center"
-        href="tel:+14804704065"
+        href={PHONE.tel}
     >
         <svg
             class="w-6 h-6 flex-shrink-0"
@@ -17,11 +18,11 @@
                 d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.03 21c.76 0 .99-.66.99-1.21v-3.42c0-.55-.45-.99-.99-.99z"
             ></path></svg
         >
-        CALL NOW - (480) 470-4065
+        CALL NOW - {PHONE.display}
     </a>
     <a
         class="hidden md:flex bg-orange-600 text-white font-bold md:font-headline-md md:text-headline-md py-4 px-8 rounded hover:bg-orange-700 transition-colors items-center gap-3 w-full md:w-auto justify-center"
-        href="sms:+14804704065"
+        href={PHONE.sms}
     >
         💬 TEXT NOW
     </a>

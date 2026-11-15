@@ -1,4 +1,5 @@
 ---
+import { PHONE } from "../config/site";
 import Layout from "../layouts/Layout.astro";
 ---
 
@@ -61,6 +62,12 @@ import Layout from "../layouts/Layout.astro";
         <p>
             You may opt out of text messages at any time by replying <b>STOP</b> or
             request additional information by replying <b>HELP</b>.
+        </p>
+        <p>
+            We do not share, sell, or transfer your phone number or SMS consent
+            to third parties or affiliates for their marketing or promotional
+            purposes. Text messaging opt-in data and consent are never shared
+            with any third parties.
         </p>
 
         <h2 class="text-xl font-bold">Information Sharing</h2>
@@ -136,8 +143,8 @@ import Layout from "../layouts/Layout.astro";
                 >dan@cashhomebuyersamerica.com</a
             ><br />
             Phone: <a
-                href="tel:+14804704065"
-                class="text-[#1E73BE] hover:underline">(480) 470-4065</a
+                href={PHONE.tel}
+                class="text-[#1E73BE] hover:underline">{PHONE.display}</a
             >
         </p>
     </div>
