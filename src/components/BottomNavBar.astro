@@ -1,4 +1,5 @@
 ---
+import { PHONE } from "../config/site";
 
 ---
 
@@ -8,7 +9,7 @@
     <div class="flex gap-[10px] w-full max-w-[442px] px-[19px]">
         <a
             class="flex-1 flex justify-center items-center gap-[10px] bg-green-600 text-white font-bold text-[18.4px] py-[14px] rounded shadow hover:bg-green-700 transition-colors"
-            href="tel:+14804704065"
+            href={PHONE.tel}
         >
             <svg
                 class="w-[23px] h-[23px]"
@@ -22,7 +23,7 @@
         </a>
         <a
             class="flex-1 flex justify-center items-center gap-[10px] bg-orange-600 text-white font-bold text-[18.4px] py-[14px] rounded shadow hover:bg-orange-700 transition-colors"
-            href="sms:+14804704065"
+            href={PHONE.sms}
         >
             💬 TEXT NOW
         </a>
