@@ -21,7 +21,7 @@ As this is a modern **Astro** project, it is designed for seamless deployment on
 All contact information is integrated within the site:
 
 - **Email:** [dan@cashhomebuyersamerica.com](mailto:dan@cashhomebuyersamerica.com)
-- **Phone:** (480) 470-4065
+- **Phone:** (623) 400-6767
 
 > **Performance Note:** The site has been fully optimized to achieve a **99/100** performance gscore on Google Lighthouse. To maintain this speed, please avoid installing heavy third-party plugins directly into the code.
 

@@ -1,93 +1,147 @@
 import type { APIRoute } from "astro";
+import {
+  SELLER_SMS_ACTIVE,
+  SELLER_SMS_AFTER_HOURS,
+  clean,
+  isCallWindow,
+  renderSellerSms,
+  toE164US,
+} from "../../lib/leadAlerts";
+import { legacyTwilioNotify } from "../../lib/legacyTwilio";
 
 // On-demand (server-rendered) route. The rest of the site stays static.
+// Called by the lead form after the Zapier/Podio webhook. For every lead it:
+//   1. Texts each admin number (address + phone).
+//   2. Calls each admin number, only 6 AM - 6 PM Arizona time.
+//   3. Instantly texts the seller (only if they ticked the consent box).
+// Provider: Signal House REST API (https://v2.signalhouse.io).
+
 export const prerender = false;
 
-// Triggered by the lead form alongside the existing Zapier/Podio webhook.
-// For every admin number it:
-//   1. Sends an SMS containing the lead's address + phone.
-//   2. Places a call that says "You've got a new lead".
+type Result = { kind: string; to: string; ok: boolean; status?: number; error?: string };
 
-const CALL_MESSAGE = "Hello! You've got a new lead. Kindly check your leads dashboard for details. Thank you.";
-
-type TwilioResult = { to: string; ok: boolean; status: number; error?: string };
-
-function twilioForm(params: Record<string, string>): string {
-  return Object.entries(params)
-    .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
-    .join("&");
+async function signalHouse(
+  baseUrl: string,
+  apiKey: string,
+  path: string,
+  body: unknown,
+  kind: string,
+  to: string,
+): Promise<Result> {
+  try {
+    const res = await fetch(`${baseUrl}${path}`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    let error: string | undefined;
+    if (!res.ok) {
+      try {
+        const data = (await res.json()) as { message?: string; error?: string };
+        error = data?.message ?? data?.error;
+      } catch {
+        error = `HTTP ${res.status}`;
+      }
+    }
+    return { kind, to, ok: res.ok, status: res.status, error };
+  } catch (err) {
+    return { kind, to, ok: false, error: String(err) };
+  }
 }
 
-async function twilioRequest(
-  sid: string,
-  auth: string,
-  resource: "Messages" | "Calls",
-  params: Record<string, string>,
-): Promise<TwilioResult> {
-  const url = `https://api.twilio.com/2010-04-01/Accounts/${sid}/${resource}.json`;
-  const res = await fetch(url, {
-    method: "POST",
-    headers: {
-      Authorization: `Basic ${auth}`,
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: twilioForm(params),
-  });
-  let error: string | undefined;
-  if (!res.ok) {
-    try {
-      const body = (await res.json()) as { message?: string };
-      error = body?.message;
-    } catch {
-      error = await res.text();
-    }
+function allowedOrigin(request: Request): boolean {
+  const origin = request.headers.get("origin");
+  if (!origin) return true; // same-origin requests from some browsers omit it
+  try {
+    const host = new URL(origin).hostname;
+    return (
+      host === "sellwithcha.com" ||
+      host === "www.sellwithcha.com" ||
+      host.endsWith(".vercel.app") || // Vercel preview deployments
+      host === "localhost"
+    );
+  } catch {
+    return false;
   }
-  return { to: params.To, ok: res.ok, status: res.status, error };
 }
 
 export const POST: APIRoute = async ({ request }) => {
-  const sid = import.meta.env.TWILIO_ACCOUNT_SID;
-  const token = import.meta.env.TWILIO_AUTH_TOKEN;
-  const from = import.meta.env.TWILIO_FROM_NUMBER;
-  const adminNumbers = (import.meta.env.ADMIN_NUMBERS ?? "")
-    .split(",")
-    .map((n) => n.trim())
-    .filter(Boolean);
+  if (!allowedOrigin(request)) return json(403, { error: "Forbidden." });
 
-  if (!sid || !token || !from) {
-    return json(500, { error: "Twilio environment variables are not configured." });
-  }
+  const apiKey = import.meta.env.SIGNALHOUSE_API_KEY;
+  const from = import.meta.env.SIGNALHOUSE_FROM_NUMBER;
+  const voiceFrom = import.meta.env.SIGNALHOUSE_VOICE_FROM_NUMBER || from;
+  const baseUrl = (import.meta.env.SIGNALHOUSE_BASE_URL || "https://v2.signalhouse.io").replace(/\/$/, "");
+  const siteUrl = (import.meta.env.SITE_URL || "https://www.sellwithcha.com").replace(/\/$/, "");
+  const adminNumbers = ((import.meta.env.ALERT_NUMBERS ?? "") as string)
+    .split(",")
+    .map((n) => toE164US(n.trim()))
+    .filter((n): n is string => Boolean(n));
+
+  // Signal House not configured yet: keep using the existing Twilio alerts.
+  if (!apiKey || !from) return legacyTwilioNotify(request);
   if (adminNumbers.length === 0) {
-    return json(500, { error: "No ADMIN_NUMBERS configured." });
+    return json(500, { error: "No valid ALERT_NUMBERS configured." });
   }
 
   let address = "";
   let phone = "";
+  let consent = false;
   try {
-    const body = (await request.json()) as { address?: string; phone?: string };
-    address = (body.address ?? "").toString().slice(0, 200);
-    phone = (body.phone ?? "").toString().slice(0, 40);
+    const body = (await request.json()) as {
+      address?: string;
+      phone?: string;
+      consent?: boolean;
+    };
+    address = clean(body.address, 200);
+    phone = clean(body.phone, 40);
+    consent = body.consent === true;
   } catch {
     return json(400, { error: "Invalid JSON body." });
   }
 
-  const auth = Buffer.from(`${sid}:${token}`).toString("base64");
-  const smsBody = `New lead: ${address || "(no address)"}, phone ${phone || "(no phone)"}`;
-  const twiml = `<Response><Say>${CALL_MESSAGE}</Say></Response>`;
+  const sellerNumber = toE164US(phone);
+  const callWindow = isCallWindow();
+  const adminSms = `New lead: ${address || "(no address)"}, phone ${phone || "(no phone)"}`;
 
-  const tasks: Promise<TwilioResult>[] = [];
+  const tasks: Promise<Result>[] = [];
+
   for (const to of adminNumbers) {
-    tasks.push(twilioRequest(sid, auth, "Messages", { From: from, To: to, Body: smsBody }));
-    tasks.push(twilioRequest(sid, auth, "Calls", { From: from, To: to, Twiml: twiml }));
+    tasks.push(
+      signalHouse(baseUrl, apiKey, "/message/sms", {
+        senderPhoneNumber: from,
+        recipientPhoneNumber: [to], // raw API field is singular, value is an array
+        messageBody: adminSms,
+      }, "admin-sms", to),
+    );
+    if (callWindow) {
+      tasks.push(
+        signalHouse(baseUrl, apiKey, "/voice/v1/calls", {
+          from: voiceFrom,
+          to,
+          answer_url: `${siteUrl}/api/voice-alert`,
+        }, "admin-call", to),
+      );
+    }
   }
 
-  const settled = await Promise.allSettled(tasks);
-  const results = settled.map((r) =>
-    r.status === "fulfilled" ? r.value : { ok: false, error: String(r.reason) },
-  );
-  const allOk = results.every((r) => r.ok);
+  // Seller text: only with a valid US number AND the ticked consent box.
+  if (sellerNumber && consent) {
+    const template = callWindow ? SELLER_SMS_ACTIVE : SELLER_SMS_AFTER_HOURS;
+    tasks.push(
+      signalHouse(baseUrl, apiKey, "/message/sms", {
+        senderPhoneNumber: from,
+        recipientPhoneNumber: [sellerNumber],
+        messageBody: renderSellerSms(template, address),
+      }, "seller-sms", sellerNumber),
+    );
+  }
 
-  return json(allOk ? 200 : 207, { ok: allOk, results });
+  const results = await Promise.all(tasks);
+  const allOk = results.every((r) => r.ok);
+  // Don't echo full phone numbers back to the browser.
+  const safe = results.map((r) => ({ ...r, to: `***${r.to.slice(-4)}` }));
+  return json(allOk ? 200 : 207, { ok: allOk, callWindow, results: safe });
 };
 
 function json(status: number, data: unknown): Response {
