@@ -19,7 +19,7 @@ export function toE164US(input: string): string | null {
   return `+1${digits}`;
 }
 
-/** True between 6:00 AM and 6:00 PM Arizona time (calls allowed). */
+/** True between 6:00 AM and 5:00 PM Arizona time (calls allowed). */
 export function isCallWindow(now: Date = new Date()): boolean {
   const parts = new Intl.DateTimeFormat("en-US", {
     timeZone: TIME_ZONE,
@@ -28,7 +28,7 @@ export function isCallWindow(now: Date = new Date()): boolean {
     hourCycle: "h23",
   }).formatToParts(now);
   const hour = Number(parts.find((p) => p.type === "hour")?.value ?? "0");
-  return hour >= 6 && hour < 18;
+  return hour >= 6 && hour < 17;
 }
 
 /** Fill {Street_Address} in a seller text template. */

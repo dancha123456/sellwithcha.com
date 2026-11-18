@@ -12,7 +12,7 @@ import { legacyTwilioNotify } from "../../lib/legacyTwilio";
 // On-demand (server-rendered) route. The rest of the site stays static.
 // Called by the lead form after the Zapier/Podio webhook. For every lead it:
 //   1. Texts each admin number (address + phone).
-//   2. Calls each admin number, only 6 AM - 6 PM Arizona time.
+//   2. Calls each admin number, only 6 AM - 5 PM Arizona time.
 //   3. Instantly texts the seller (only if they ticked the consent box).
 // Provider: Signal House REST API (https://v2.signalhouse.io).
 
