@@ -12,8 +12,9 @@ import { legacyTwilioNotify } from "../../lib/legacyTwilio";
 // On-demand (server-rendered) route. The rest of the site stays static.
 // Called by the lead form after the Zapier/Podio webhook. For every lead it:
 //   1. Texts each admin number (address + phone).
-//   2. Calls each admin number, only 6 AM - 5 PM Arizona time.
-//   3. Instantly texts the seller (only if they ticked the consent box).
+//   2. Instantly texts the seller (only if they ticked the consent box):
+//      daytime wording 6 AM - 5 PM Arizona time, out-of-hours wording otherwise.
+// (Alert phone calls were removed: Signal House blocks automated voice calls.)
 // Provider: Signal House REST API (https://v2.signalhouse.io).
 
 export const prerender = false;
@@ -70,9 +71,7 @@ export const POST: APIRoute = async ({ request }) => {
 
   const apiKey = import.meta.env.SIGNALHOUSE_API_KEY;
   const from = import.meta.env.SIGNALHOUSE_FROM_NUMBER;
-  const voiceFrom = import.meta.env.SIGNALHOUSE_VOICE_FROM_NUMBER || from;
   const baseUrl = (import.meta.env.SIGNALHOUSE_BASE_URL || "https://v2.signalhouse.io").replace(/\/$/, "");
-  const siteUrl = (import.meta.env.SITE_URL || "https://www.sellwithcha.com").replace(/\/$/, "");
   const adminNumbers = ((import.meta.env.ALERT_NUMBERS ?? "") as string)
     .split(",")
     .map((n) => toE164US(n.trim()))
@@ -114,15 +113,6 @@ export const POST: APIRoute = async ({ request }) => {
         messageBody: adminSms,
       }, "admin-sms", to),
     );
-    if (callWindow) {
-      tasks.push(
-        signalHouse(baseUrl, apiKey, "/voice/v1/calls", {
-          from: voiceFrom,
-          to,
-          answer_url: `${siteUrl}/api/voice-alert`,
-        }, "admin-call", to),
-      );
-    }
   }
 
   // Seller text: only with a valid US number AND the ticked consent box.
