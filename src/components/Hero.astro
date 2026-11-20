@@ -207,6 +207,17 @@ import Benefits from "./Benefits.astro";
 			} catch (err) {
 				console.error("Lead submission failed:", err);
 			}
+// Create the lead straight in Podio (backup for the Zapier link above).
+            try {
+                fetch("/api/podio-lead", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ address, phone, consent, timestamp }),
+                    keepalive: true,
+                }).catch((err) => console.error("Podio lead failed:", err));
+            } catch (err) {
+                console.error("Podio lead failed:", err);
+            }
 // Notify admins + seller via Signal House (SMS + call). Fire-and-forget so a
             // provider hiccup never blocks the redirect to the thank-you page.
             try {
