@@ -8,9 +8,6 @@ export const SELLER_SMS_ACTIVE =
 export const SELLER_SMS_AFTER_HOURS =
   "Hi, it's Dan from Cash Homebuyers America. Just got your request for {Street_Address}. Is the property occupied right now, and does it need any major repairs? Reply STOP to opt out.";
 
-export const CALL_MESSAGE =
-  "Hello! You've got a new lead. Kindly check your leads dashboard for details. Thank you.";
-
 /** Normalize a US phone to E.164 (+1XXXXXXXXXX). Returns null when it is not a valid 10-digit US number. */
 export function toE164US(input: string): string | null {
   let digits = (input ?? "").replace(/\D/g, "");
@@ -19,7 +16,7 @@ export function toE164US(input: string): string | null {
   return `+1${digits}`;
 }
 
-/** True between 6:00 AM and 5:00 PM Arizona time (calls allowed). */
+/** True between 6:00 AM and 5:00 PM Arizona time (daytime seller text). */
 export function isCallWindow(now: Date = new Date()): boolean {
   const parts = new Intl.DateTimeFormat("en-US", {
     timeZone: TIME_ZONE,
