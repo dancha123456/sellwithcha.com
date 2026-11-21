@@ -2,6 +2,7 @@ import type { APIRoute } from "astro";
 import {
   SELLER_SMS_ACTIVE,
   SELLER_SMS_AFTER_HOURS,
+  TIME_ZONE,
   clean,
   isCallWindow,
   renderSellerSms,
@@ -47,6 +48,35 @@ async function signalHouse(
     return { kind, to, ok: res.ok, status: res.status, error };
   } catch (err) {
     return { kind, to, ok: false, error: String(err) };
+  }
+}
+
+// Email alert (Resend REST API). Needs RESEND_API_KEY, EMAIL_FROM, EMAIL_ALERT_TO.
+async function sendEmail(
+  apiKey: string,
+  from: string,
+  to: string[],
+  subject: string,
+  text: string,
+): Promise<Result> {
+  try {
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ from, to, subject, text }),
+    });
+    let error: string | undefined;
+    if (!res.ok) {
+      try {
+        const data = (await res.json()) as { message?: string };
+        error = data?.message ?? `HTTP ${res.status}`;
+      } catch {
+        error = `HTTP ${res.status}`;
+      }
+    }
+    return { kind: "email", to: "email", ok: res.ok, status: res.status, error };
+  } catch (err) {
+    return { kind: "email", to: "email", ok: false, error: String(err) };
   }
 }
 
@@ -127,10 +157,37 @@ export const POST: APIRoute = async ({ request }) => {
     );
   }
 
+  // Email alert to the VA / team (only when configured).
+  const resendKey = import.meta.env.RESEND_API_KEY;
+  const emailFrom = import.meta.env.EMAIL_FROM;
+  const emailTo = ((import.meta.env.EMAIL_ALERT_TO ?? "") as string)
+    .split(",")
+    .map((e) => e.trim())
+    .filter((e) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e));
+  if (resendKey && emailFrom && emailTo.length > 0) {
+    const when = new Intl.DateTimeFormat("en-US", {
+      timeZone: TIME_ZONE,
+      dateStyle: "medium",
+      timeStyle: "short",
+    }).format(new Date());
+    tasks.push(
+      sendEmail(
+        resendKey,
+        emailFrom,
+        emailTo,
+        `New lead: ${address || "(no address)"}`,
+        `Address: ${address || "(none)"}\nPhone: ${phone || "(none)"}\nReceived: ${when} Arizona time`,
+      ),
+    );
+  }
+
   const results = await Promise.all(tasks);
   const allOk = results.every((r) => r.ok);
   // Don't echo full phone numbers back to the browser.
-  const safe = results.map((r) => ({ ...r, to: `***${r.to.slice(-4)}` }));
+  const safe = results.map((r) => ({
+    ...r,
+    to: r.kind === "email" ? "email" : `***${r.to.slice(-4)}`,
+  }));
   return json(allOk ? 200 : 207, { ok: allOk, callWindow, results: safe });
 };
 
