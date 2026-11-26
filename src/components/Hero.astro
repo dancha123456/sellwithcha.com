@@ -54,7 +54,7 @@ import Benefits from "./Benefits.astro";
 		</a>
 	</div>
 	<!-- Right: Lead Form Card -->
-	<div class="md:w-1/2">
+	<div id="cashoffer" class="scroll-mt-24 md:w-1/2">
 		<div
 			class="bg-surface-container-lowest mt-[-15px] p-[14px] pb-[5px] md:p-[22px] rounded-lg"
 		>
@@ -136,6 +136,30 @@ import Benefits from "./Benefits.astro";
 </section>
 
 <script>
+	// Google Ads click ID: saved when a visitor arrives from an ad (?gclid=...),
+	// kept for 90 days, and sent with the lead for offline conversion tracking.
+	const CLICK_KEY = "swc_gclid";
+	const CLICK_TTL = 90 * 24 * 60 * 60 * 1000;
+	try {
+		const params = new URLSearchParams(window.location.search);
+		const id = params.get("gclid");
+		if (id) {
+			localStorage.setItem(CLICK_KEY, JSON.stringify({ id, at: Date.now() }));
+		}
+	} catch {
+		// storage blocked: tracking is skipped, the form still works
+	}
+	function readClickId(): string {
+		try {
+			const saved = JSON.parse(localStorage.getItem(CLICK_KEY) || "null");
+			if (saved && Date.now() - saved.at < CLICK_TTL) return String(saved.id);
+		} catch {
+			// ignore
+		}
+		return "";
+	}
+
+	let submitting = false;
 	const form = document.getElementById("lead-form");
 	if (form) {
 		form.addEventListener("submit", async function (e) {
@@ -191,36 +215,32 @@ import Benefits from "./Benefits.astro";
 			}
 			// --- End validation ---
 
-			// Send lead to server (Podio CRM)
-			const leadData = {
-				address,
-				phone,
-				consent,
-				timestamp,
-				source: "sellwithcha.com",
-			};
+			// Only send once, even if the button is clicked twice.
+			if (submitting) return;
+			submitting = true;
+			const submitBtn = form.querySelector(
+				'button[type="submit"]',
+			) as HTMLButtonElement | null;
+			if (submitBtn) {
+				submitBtn.disabled = true;
+				submitBtn.textContent = "SENDING...";
+			}
+
+			// Create the lead in Podio (with the Google ad click ID, if any).
+			const gclid = readClickId();
 			try {
-				await fetch("https://hooks.zapier.com/hooks/catch/21078382/43asz0s/", {
+				await fetch("/api/podio-lead", {
 					method: "POST",
-					body: JSON.stringify(leadData),
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ address, phone, consent, timestamp, gclid }),
+					keepalive: true,
 				});
 			} catch (err) {
-				console.error("Lead submission failed:", err);
+				console.error("Podio lead failed:", err);
 			}
-// Create the lead straight in Podio (backup for the Zapier link above).
-            try {
-                fetch("/api/podio-lead", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ address, phone, consent, timestamp }),
-                    keepalive: true,
-                }).catch((err) => console.error("Podio lead failed:", err));
-            } catch (err) {
-                console.error("Podio lead failed:", err);
-            }
-// Notify admins + seller via Signal House (SMS + call). Fire-and-forget so a
-            // provider hiccup never blocks the redirect to the thank-you page.
-            try {
+			// Notify admins + seller via Signal House (SMS). Fire-and-forget so a
+			// provider hiccup never blocks the redirect to the thank-you page.
+			try {
                 fetch("/api/notify", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
