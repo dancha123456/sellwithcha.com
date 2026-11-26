@@ -5,8 +5,8 @@ import { GCLID_FIELD, podioApi, podioEnv } from "../../lib/podio";
 // Offline conversion feed for Google Ads "scheduled uploads" (HTTPS source).
 // Google Ads fetches this CSV on a schedule. It lists every Seller Lead whose
 // "Google Lead Quality" is set and that has a Google Click ID and/or a phone:
-//   - Qualified Lead  -> one "Qualified Lead" conversion
-//   - Contract        -> a "Qualified Lead" AND a "Contract" conversion
+//   - Qualified Lead  -> one "Podio - Qualified Lead" conversion
+//   - Contract        -> a "Podio - Qualified Lead" AND a "Podio - Contract" conversion
 // Conversion time = when the lead was created in Podio, so each row stays the
 // same on every fetch and Google de-duplicates repeats.
 // Each row carries the GCLID plus the SHA-256 hashed phone (E.164), so Google can
@@ -20,8 +20,15 @@ const LOOKBACK_DAYS = 90; // Google only accepts clicks from the last 90 days
 const TIME_ZONE = "America/Phoenix";
 
 // Must match the conversion action names in Google Ads exactly.
-const CONVERSION_QUALIFIED = "Qualified Lead";
-const CONVERSION_CONTRACT = "Contract";
+const CONVERSION_QUALIFIED = "Podio - Qualified Lead";
+const CONVERSION_CONTRACT = "Podio - Contract";
+// Google Ads Data Manager links each HTTPS connection to ONE conversion action,
+// so ?action=qualified or ?action=contract returns only that action's rows.
+// Without ?action, both are returned.
+const ACTION_FILTER: Record<string, string> = {
+  qualified: CONVERSION_QUALIFIED,
+  contract: CONVERSION_CONTRACT,
+};
 
 type FieldValue = { value?: unknown };
 type Field = { external_id: string; values?: FieldValue[] };
@@ -94,6 +101,10 @@ export const GET: APIRoute = async ({ request }) => {
   const env = podioEnv();
   if (!env) return new Response("Podio not configured.", { status: 503 });
 
+  const actionParam = new URL(request.url).searchParams.get("action") ?? "";
+  const only = ACTION_FILTER[actionParam.toLowerCase()];
+  if (actionParam && !only) return new Response("Unknown action.", { status: 400 });
+
   const since = new Date(Date.now() - LOOKBACK_DAYS * 86_400_000).toISOString().slice(0, 10);
   const rows: string[] = [];
   try {
@@ -117,7 +128,7 @@ export const GET: APIRoute = async ({ request }) => {
             : quality === "Qualified Lead"
               ? [CONVERSION_QUALIFIED]
               : [];
-        for (const name of names) {
+        for (const name of names.filter((n) => !only || n === only)) {
           rows.push([gclid, phone, name, time, "", ""].map(csvCell).join(","));
         }
       }
