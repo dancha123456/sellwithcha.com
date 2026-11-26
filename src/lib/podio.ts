@@ -40,6 +40,18 @@ async function getToken(env: PodioEnv): Promise<string> {
   return cached.token;
 }
 
+// Authenticated call to the Podio API (JSON in, JSON out).
+export async function podioApi<T>(env: PodioEnv, method: "GET" | "POST", path: string, body?: unknown): Promise<T> {
+  const token = await getToken(env);
+  const res = await fetch(`${PODIO_API}${path}`, {
+    method,
+    headers: { Authorization: `OAuth2 ${token}`, "Content-Type": "application/json" },
+    body: body === undefined ? undefined : JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(`Podio ${method} ${path} failed (${res.status})`);
+  return (await res.json()) as T;
+}
+
 export type NewLead = {
   name: string;
   address: string;
