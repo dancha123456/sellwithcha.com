@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
 import { clean, toE164US } from "../../lib/leadAlerts";
-import { createSellerLead, podioEnv } from "../../lib/podio";
+import { podioEnv, saveLeadOrNote } from "../../lib/podio";
 
 // On-demand route. Creates a lead straight in Podio (Seller Leads app) when the
 // website form is submitted, including the Google Ads click ID when present.
@@ -61,13 +61,18 @@ export const POST: APIRoute = async ({ request }) => {
   const e164 = toE164US(phone);
   if (!address || !e164) return json(400, { error: "Address and a valid US phone are required." });
 
-  const result = await createSellerLead(env, {
-    name: `Website lead -- ${address}`,
-    address,
-    phoneDigits: e164.slice(2),
-    notes: `Website lead from sellwithcha.com on ${timestamp}. SMS/call consent: ${consent ? "yes" : "no"}.${gclid ? " Came from a Google ad." : ""}`,
-    gclid,
-  });
+  const result = await saveLeadOrNote(
+    env,
+    {
+      name: `Website lead -- ${address}`,
+      address,
+      phoneDigits: e164.slice(2),
+      notes: `Website lead from sellwithcha.com on ${timestamp}. SMS/call consent: ${consent ? "yes" : "no"}.${gclid ? " Came from a Google ad." : ""}`,
+      gclid,
+    },
+    "website form",
+  );
   if (!result.ok) return json(result.status, { error: result.error });
-  return json(200, { ok: true, itemId: result.itemId });
+  // duplicate=true tells the page not to fire the Google Ads conversion or alerts.
+  return json(200, { ok: true, duplicate: result.duplicate, itemId: result.itemId });
 };

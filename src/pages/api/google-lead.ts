@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 import { timingSafeEqual } from "node:crypto";
 import { clean, toE164US } from "../../lib/leadAlerts";
-import { createSellerLead, podioEnv } from "../../lib/podio";
+import { podioEnv, saveLeadOrNote } from "../../lib/podio";
 
 // Webhook for the Google Ads Lead Form asset. Google POSTs each submitted lead
 // here; we create a Seller Lead in Podio (phone + address + Google click ID) and
@@ -62,20 +62,24 @@ export const POST: APIRoute = async ({ request }) => {
   const isTest = payload.is_test === true;
 
   const label = isTest ? "TEST Google lead form" : "Google lead form";
-  const result = await createSellerLead(env, {
-    name: `${label} -- ${address || rawPhone || "no details"}`,
-    address,
-    phoneDigits: e164 ? e164.slice(2) : "",
-    notes:
-      `${label} lead (Google Ads) on ${new Date().toISOString()}.` +
-      (e164 ? "" : ` Phone as entered: ${rawPhone || "(none)"}.`),
-    gclid,
-  });
+  const result = await saveLeadOrNote(
+    env,
+    {
+      name: `${label} -- ${address || rawPhone || "no details"}`,
+      address,
+      phoneDigits: e164 ? e164.slice(2) : "",
+      notes:
+        `${label} lead (Google Ads) on ${new Date().toISOString()}.` +
+        (e164 ? "" : ` Phone as entered: ${rawPhone || "(none)"}.`),
+      gclid,
+    },
+    "Google lead form",
+  );
   if (!result.ok) return json(result.status, { error: result.error });
 
   // Text the admin numbers like website leads do (seller text needs website consent,
-  // so it's not sent here). Skipped for Google's test leads.
-  if (!isTest) {
+  // so it's not sent here). Skipped for Google's test leads and repeat submissions.
+  if (!isTest && !result.duplicate) {
     try {
       await fetch(new URL("/api/notify", request.url), {
         method: "POST",

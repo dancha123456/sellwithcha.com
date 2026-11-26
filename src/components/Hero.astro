@@ -227,33 +227,60 @@ import Benefits from "./Benefits.astro";
 			}
 
 			// Create the lead in Podio (with the Google ad click ID, if any).
+			// If this phone number is already in Podio, the server adds a note to the
+			// existing lead and answers duplicate=true.
 			const gclid = readClickId();
+			let duplicate = false;
 			try {
-				await fetch("/api/podio-lead", {
+				const res = await fetch("/api/podio-lead", {
 					method: "POST",
 					headers: { "Content-Type": "application/json" },
 					body: JSON.stringify({ address, phone, consent, timestamp, gclid }),
 					keepalive: true,
 				});
+				const data = (await res.json().catch(() => ({}))) as { duplicate?: boolean };
+				duplicate = data.duplicate === true;
 			} catch (err) {
 				console.error("Podio lead failed:", err);
 			}
-			// Notify admins + seller via Signal House (SMS). Fire-and-forget so a
-			// provider hiccup never blocks the redirect to the thank-you page.
-			try {
-                fetch("/api/notify", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ address, phone, consent }),
-                    keepalive: true,
-                }).catch((err) =>
-                    console.error("Admin notification failed:", err),
-                );
-            } catch (err) {
-                console.error("Admin notification failed:", err);
-            }
-			// Redirect
-			window.location.href = "/thank-you";
+
+			if (!duplicate) {
+				// Notify admins + seller via Signal House (SMS). Fire-and-forget so a
+				// provider hiccup never blocks the redirect to the thank-you page.
+				try {
+					fetch("/api/notify", {
+						method: "POST",
+						headers: { "Content-Type": "application/json" },
+						body: JSON.stringify({ address, phone, consent }),
+						keepalive: true,
+					}).catch((err) => console.error("Admin notification failed:", err));
+				} catch (err) {
+					console.error("Admin notification failed:", err);
+				}
+			}
+
+			// Tell Google Tag Manager about NEW leads only. The Google Ads lead
+			// conversion in GTM is triggered by this "lead_submitted" event, so
+			// repeat submissions never count as a conversion.
+			const goThankYou = () => {
+				window.location.href = "/thank-you";
+			};
+			const w = window as unknown as { dataLayer?: unknown[] };
+			if (!duplicate && Array.isArray(w.dataLayer)) {
+				const timer = setTimeout(goThankYou, 1500); // don't wait forever on GTM
+				w.dataLayer.push({
+					event: "lead_submitted",
+					// For Enhanced Conversions for Leads: phone in E.164 format.
+					// Google's tag hashes it before sending.
+					lead_phone: `+1${digits}`,
+					eventCallback: () => {
+						clearTimeout(timer);
+						goThankYou();
+					},
+				});
+			} else {
+				goThankYou();
+			}
 		});
 	}
 </script>
