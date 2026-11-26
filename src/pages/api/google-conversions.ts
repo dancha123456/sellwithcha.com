@@ -101,7 +101,12 @@ export const GET: APIRoute = async ({ request }) => {
   const env = podioEnv();
   if (!env) return new Response("Podio not configured.", { status: 503 });
 
-  const actionParam = new URL(request.url).searchParams.get("action") ?? "";
+  const params = new URL(request.url).searchParams;
+  // format=dm: Google Ads Data Manager layout. It reads the first line as the
+  // column names, so no "Parameters:" line; the time carries the Arizona offset
+  // (-07:00, no daylight saving) instead, plus a unique Row ID per conversion.
+  const dm = params.get("format") === "dm";
+  const actionParam = params.get("action") ?? "";
   const only = ACTION_FILTER[actionParam.toLowerCase()];
   if (actionParam && !only) return new Response("Unknown action.", { status: 400 });
 
@@ -129,7 +134,14 @@ export const GET: APIRoute = async ({ request }) => {
               ? [CONVERSION_QUALIFIED]
               : [];
         for (const name of names.filter((n) => !only || n === only)) {
-          rows.push([gclid, phone, name, time, "", ""].map(csvCell).join(","));
+          rows.push(
+            (dm
+              ? [`${item.item_id}-${name === CONVERSION_CONTRACT ? "contract" : "qualified"}`, gclid, phone, name, `${time}-07:00`]
+              : [gclid, phone, name, time, "", ""]
+            )
+              .map(csvCell)
+              .join(","),
+          );
         }
       }
       if (page.items.length < 500) break;

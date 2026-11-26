@@ -8,5 +8,6 @@ export const prerender = false;
 export const GET: APIRoute = (context) => {
   const url = new URL(context.request.url);
   url.searchParams.set("action", "qualified");
+  url.searchParams.set("format", "dm");
   return feed({ ...context, request: new Request(url, context.request) });
 };
