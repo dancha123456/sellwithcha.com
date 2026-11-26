@@ -1,14 +1,16 @@
 import type { APIRoute } from "astro";
-import { timingSafeEqual } from "node:crypto";
+import { createHash, timingSafeEqual } from "node:crypto";
 import { GCLID_FIELD, podioApi, podioEnv } from "../../lib/podio";
 
 // Offline conversion feed for Google Ads "scheduled uploads" (HTTPS source).
-// Google Ads fetches this CSV on a schedule. It lists every Seller Lead that has
-// a Google Click ID and whose "Google Lead Quality" is set:
+// Google Ads fetches this CSV on a schedule. It lists every Seller Lead whose
+// "Google Lead Quality" is set and that has a Google Click ID and/or a phone:
 //   - Qualified Lead  -> one "Qualified Lead" conversion
 //   - Contract        -> a "Qualified Lead" AND a "Contract" conversion
 // Conversion time = when the lead was created in Podio, so each row stays the
 // same on every fetch and Google de-duplicates repeats.
+// Each row carries the GCLID plus the SHA-256 hashed phone (E.164), so Google can
+// match it with "Enhanced conversions for leads" even when the click ID is missing.
 // Protected with HTTP Basic auth: user "google", password GOOGLE_CONVERSIONS_PASSWORD.
 
 export const prerender = false;
@@ -65,6 +67,16 @@ function categoryText(item: Item, externalId: string): string {
   return v?.text?.trim() ?? "";
 }
 
+// First phone value on the item as a SHA-256 hash of +1XXXXXXXXXX, or "".
+function hashedPhone(item: Item): string {
+  for (const v of item.fields.find((f) => f.external_id === "phone")?.values ?? []) {
+    let d = String(v.value ?? "").replace(/\D/g, "");
+    if (d.length === 11 && d.startsWith("1")) d = d.slice(1);
+    if (/^[2-9]\d{9}$/.test(d)) return createHash("sha256").update(`+1${d}`).digest("hex");
+  }
+  return "";
+}
+
 function csvCell(s: string): string {
   return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
@@ -96,7 +108,8 @@ export const GET: APIRoute = async ({ request }) => {
       for (const item of page.items) {
         const quality = categoryText(item, QUALITY_FIELD);
         const gclid = textValue(item, GCLID_FIELD);
-        if (!quality || !gclid) continue;
+        const phone = hashedPhone(item);
+        if (!quality || (!gclid && !phone)) continue;
         const time = toArizona(item.created_on);
         const names =
           quality === "Contract"
@@ -105,7 +118,7 @@ export const GET: APIRoute = async ({ request }) => {
               ? [CONVERSION_QUALIFIED]
               : [];
         for (const name of names) {
-          rows.push([gclid, name, time, "", ""].map(csvCell).join(","));
+          rows.push([gclid, phone, name, time, "", ""].map(csvCell).join(","));
         }
       }
       if (page.items.length < 500) break;
@@ -116,7 +129,7 @@ export const GET: APIRoute = async ({ request }) => {
 
   const csv = [
     `Parameters:TimeZone=${TIME_ZONE}`,
-    "Google Click ID,Conversion Name,Conversion Time,Conversion Value,Conversion Currency",
+    "Google Click ID,Phone Number,Conversion Name,Conversion Time,Conversion Value,Conversion Currency",
     ...rows,
   ].join("\n");
 

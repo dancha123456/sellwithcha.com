@@ -52,6 +52,47 @@ export async function podioApi<T>(env: PodioEnv, method: "GET" | "POST", path: s
   return (await res.json()) as T;
 }
 
+// ---- Duplicate check -------------------------------------------------------
+
+type SearchResult = { results?: { id: number; type: string }[] };
+type ItemFields = { item_id: number; fields: { values?: { value?: unknown }[] }[] };
+
+function hasPhone(item: ItemFields, digits: string): boolean {
+  for (const field of item.fields) {
+    for (const v of field.values ?? []) {
+      if (typeof v.value !== "string") continue;
+      let d = v.value.replace(/\D/g, "");
+      if (d.length === 11 && d.startsWith("1")) d = d.slice(1);
+      if (d === digits) return true;
+    }
+  }
+  return false;
+}
+
+// Finds the newest Seller Lead with this 10-digit phone number, or null.
+// Searches Podio for the number, then double-checks each hit's phone values,
+// so a partial text match never counts as a duplicate.
+export async function findLeadByPhone(env: PodioEnv, digits: string): Promise<number | null> {
+  const query = encodeURIComponent(digits);
+  const found = await podioApi<SearchResult>(
+    env,
+    "GET",
+    `/search/app/${env.appId}/v2?query=${query}&ref_type=item&limit=10`,
+  );
+  const ids = (found.results ?? []).filter((r) => r.type === "item").map((r) => r.id);
+  let newest: number | null = null;
+  for (const id of ids) {
+    const item = await podioApi<ItemFields>(env, "GET", `/item/${id}`);
+    if (hasPhone(item, digits) && (newest === null || id > newest)) newest = id;
+  }
+  return newest;
+}
+
+// Adds a comment ("note") to an existing item.
+export async function addNote(env: PodioEnv, itemId: number, text: string): Promise<void> {
+  await podioApi(env, "POST", `/comment/item/${itemId}/`, { value: text });
+}
+
 export type NewLead = {
   name: string;
   address: string;
@@ -61,6 +102,35 @@ export type NewLead = {
 };
 
 export type CreateResult = { ok: true; itemId?: number } | { ok: false; status: number; error: string };
+
+export type SaveResult =
+  | { ok: true; duplicate: boolean; itemId?: number }
+  | { ok: false; status: number; error: string };
+
+// If a lead with this phone already exists, add a note to it instead of creating
+// a new one. If the check itself fails, create the lead anyway (never lose a lead).
+export async function saveLeadOrNote(env: PodioEnv, lead: NewLead, source: string): Promise<SaveResult> {
+  if (lead.phoneDigits) {
+    try {
+      const existing = await findLeadByPhone(env, lead.phoneDigits);
+      if (existing !== null) {
+        await addNote(
+          env,
+          existing,
+          `Repeat submission (${source}) on ${new Date().toISOString()}. ` +
+            `Address entered: ${lead.address || "(none)"}.` +
+            (lead.gclid ? ` Google click ID: ${lead.gclid}` : "") +
+            " No new lead was created.",
+        );
+        return { ok: true, duplicate: true, itemId: existing };
+      }
+    } catch (err) {
+      console.error("Duplicate check failed, creating lead anyway:", err);
+    }
+  }
+  const created = await createSellerLead(env, lead);
+  return created.ok ? { ok: true, duplicate: false, itemId: created.itemId } : created;
+}
 
 export async function createSellerLead(env: PodioEnv, lead: NewLead): Promise<CreateResult> {
   const first = await createOnce(env, lead);
