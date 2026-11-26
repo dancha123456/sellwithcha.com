@@ -150,11 +150,15 @@ export const GET: APIRoute = async ({ request }) => {
     return new Response(`Podio error: ${String(err)}`, { status: 502 });
   }
 
-  const csv = [
-    `Parameters:TimeZone=${TIME_ZONE}`,
-    "Google Click ID,Phone Number,Conversion Name,Conversion Time,Conversion Value,Conversion Currency",
-    ...rows,
-  ].join("\n");
+  const csv = (
+    dm
+      ? ["Row ID,Google Click ID,Phone Number,Conversion Name,Conversion Time", ...rows]
+      : [
+          `Parameters:TimeZone=${TIME_ZONE}`,
+          "Google Click ID,Phone Number,Conversion Name,Conversion Time,Conversion Value,Conversion Currency",
+          ...rows,
+        ]
+  ).join("\n");
 
   return new Response(`${csv}\n`, {
     status: 200,
