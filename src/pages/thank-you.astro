@@ -1,6 +1,9 @@
 ---
 import { PHONE } from "../config/site";
 import Layout from "../layouts/Layout.astro";
+
+// 623-400-6767 style, as in the client's wording.
+const PHONE_DASHED = PHONE.display.replace(/[()]/g, "").replace(" ", "-");
 ---
 
 <Layout>
@@ -13,11 +16,14 @@ import Layout from "../layouts/Layout.astro";
             Thank you for leaving your information!
         </h1>
         <p class="font-body-lg text-body-lg text-on-surface mb-4 max-w-2xl">
-            Dan will call you in the next 30-60 seconds from <a
+            During business hours, we’ll call you within 1 minute (after hours
+            may be delayed). Look out for a call or text from <a
                 href={PHONE.tel}
-                class="text-secondary font-bold hover:underline"
-                >{PHONE.display}</a
-            > during business hours.
+                class="text-secondary font-bold hover:underline whitespace-nowrap"
+                >{PHONE_DASHED}</a
+            >—save the number since modern iOS/Android spam filters can block
+            unknown callers. We look forward to discussing your property and
+            seeing if we can assist!
         </p>
 
         <a
