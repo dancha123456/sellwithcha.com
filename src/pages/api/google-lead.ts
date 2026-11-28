@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro";
 import { timingSafeEqual } from "node:crypto";
+import { waitUntil } from "@vercel/functions";
 import { clean, toE164US } from "../../lib/leadAlerts";
 import { podioEnv, saveLeadOrNote } from "../../lib/podio";
 
@@ -7,6 +8,9 @@ import { podioEnv, saveLeadOrNote } from "../../lib/podio";
 // here; we create a Seller Lead in Podio (phone + address + Google click ID) and
 // text the admin numbers. The Lead Form's "Key" must match GOOGLE_LEAD_FORM_KEY.
 // Payload format: https://developers.google.com/google-ads/webhook/docs/implementation
+// Google only waits a few seconds for a 200, and the Podio calls (login, duplicate
+// search, create) can take 5-10s. So we check the key, reply 200 straight away and
+// save the lead in the background with waitUntil.
 
 export const prerender = false;
 
@@ -62,6 +66,30 @@ export const POST: APIRoute = async ({ request }) => {
   const isTest = payload.is_test === true;
 
   const label = isTest ? "TEST Google lead form" : "Google lead form";
+  waitUntil(
+    saveAndAlert(env, request.url, { label, address, rawPhone, e164, gclid, isTest }).catch((err) =>
+      console.error("Google lead background save failed:", err),
+    ),
+  );
+
+  return json(200, { ok: true });
+};
+
+type ParsedLead = {
+  label: string;
+  address: string;
+  rawPhone: string;
+  e164: string | null;
+  gclid: string;
+  isTest: boolean;
+};
+
+async function saveAndAlert(
+  env: NonNullable<ReturnType<typeof podioEnv>>,
+  requestUrl: string,
+  lead: ParsedLead,
+): Promise<void> {
+  const { label, address, rawPhone, e164, gclid, isTest } = lead;
   const result = await saveLeadOrNote(
     env,
     {
@@ -75,21 +103,19 @@ export const POST: APIRoute = async ({ request }) => {
     },
     "Google lead form",
   );
-  if (!result.ok) return json(result.status, { error: result.error });
+  if (!result.ok) console.error("Podio save failed for Google lead:", result.error);
 
   // Text the admin numbers like website leads do (seller text needs website consent,
   // so it's not sent here). Skipped for Google's test leads and repeat submissions.
-  if (!isTest && !result.duplicate) {
-    try {
-      await fetch(new URL("/api/notify", request.url), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ address, phone: rawPhone, consent: false }),
-      });
-    } catch (err) {
-      console.error("Admin alert for Google lead failed:", err);
-    }
+  // Still sent when the Podio save failed, so the lead is never lost.
+  if (isTest || (result.ok && result.duplicate)) return;
+  try {
+    await fetch(new URL("/api/notify", requestUrl), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ address, phone: rawPhone, consent: false }),
+    });
+  } catch (err) {
+    console.error("Admin alert for Google lead failed:", err);
   }
-
-  return json(200, { ok: true });
-};
+}
